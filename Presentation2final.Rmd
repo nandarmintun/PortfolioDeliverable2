@@ -1,0 +1,104 @@
+---
+title: "Monitoring Women, Peace and Security Agenda around the World"
+author: "Nandar Min Tun"
+institute: "School of International Service"
+date: '2023-05-09'
+output: pdf_document
+subtitle: ""
+xaringan::moon_reader:
+  lib_dir: libs
+  css: ["style.css"]
+  nature:
+    highlightStyle: github
+    highlightLines: true
+    countIncrementalSlides: false
+    progress: true
+    ratio: "16:15"
+    separator: ---
+    slideNumber: true
+    enableChalkboard: true
+    Chalkboard:
+      theme: moon
+---
+
+- The graphs below display the scores for the WPS Index 2021.
+- The WPS Index measures women's well-being and empowerment in countries around the world.
+- The scores are based on a range of indicators, including legal frameworks, security, and access to healthcare and education.
+- Higher scores indicate better performance on these indicators.
+
+- The graphs below display the scores for the WPS Index 2021.
+- The WPS Index measures women's well-being and empowerment in countries around the world.
+- The scores are based on a range of indicators, including legal frameworks, security, and access to healthcare and education.
+- Higher scores indicate better performance on these indicators.
+```{r setup, include=FALSE}
+
+# This "setup" chunk specifies global options
+# for handling code, plots, etc in your doc
+
+  knitr::opts_chunk$set(
+    echo = TRUE, warning = FALSE, message = FALSE,
+    fig.width = 6, fig.asp = 0.618, 
+    fig.align = 'center'
+  )  
+
+  library(tidyverse)
+  library(patchwork)
+  library(knitr)
+  library(kableExtra)
+  library(dplyr)
+  library(ggplot2)
+  library(xaringanExtra)
+```
+```{r load WPS, include=FALSE}
+    load("wpsdatafinal.RData")
+```
+### Analysis1: WPS Index Score
+```{r A1, echo=FALSE, out.width="110%", out.height="90%", dpi=300, fig.cap="Analysis 1"}
+
+ggplot(data = wpsdatafinal, aes(x = "Quintile", y = as.numeric(WPSIndexScore), fill = Quintile)) +
+  geom_boxplot(outlier.shape = NA) +
+  scale_fill_manual(values = c("#00AFBB", "#E7B800", "#FC4E07", "#6B3E26", "#5D5D5D")) +
+  coord_flip() +
+  ylab("WPS Index Score") +
+  ggtitle("Distribution of WPS Index Scores by Quintile")
+```
+---
+
+### Analysis 2: Distibution of Quintiles in terms of WPS and Employment
+
+```{r A2, echo=FALSE, out.width="110%", out.height="90%", dpi=300,fig.cap="Analysis 2"}
+
+library(cowplot)
+p <- ggplot(wpsdatafinal, aes(x = Employment, y = WPSIndexScore, color = Quintile)) +
+     geom_point(size = 3.5) +
+     geom_smooth(method = "loess", se = FALSE) +
+     xlab("Employment") +
+     ylab("WPS Index Score") +
+     ggtitle("Employment vs. WPS Index Score") +
+     geom_boxplot(na.rm = TRUE) +
+     theme(axis.text=element_text(size=2),
+           axis.title=element_text(size=16))
+
+p2 <- p + scale_color_manual(name = "Quintile",
+                       values = c("red", "blue","yellow","green","pink"),
+                       labels = c("Bottom", "Fourth","Third","Second","First"))
+
+# Create plot with faceted layout with reordered facets
+p3 <- ggplot(wpsdatafinal, aes(Employment, WPSIndexScore, color = Quintile)) +
+  facet_wrap(~ Quintile, scales = "free", nrow = 3) +
+  geom_point(alpha = .8, shape = 1, show.legend = FALSE) +
+  geom_smooth(method = "lm", se = FALSE) + 
+  theme(legend.position = "none",
+        strip.background = element_blank(),
+        strip.text.x = element_blank()) +
+  theme_bw() +
+  labs(title = "Individual Quintile", x = "Employment", y = "WPS Index Score") +
+  theme_bw() +
+  guides(colour = FALSE) +
+  theme(axis.text=element_text(size=2),
+        axis.title=element_text(size=16))
+
+p2 + p3
+
+```
+
